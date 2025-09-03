@@ -1,7 +1,8 @@
 // backend/routes.js
-const express = require("express");
+import express from "express";
+import pool from "./db.js";
+
 const router = express.Router();
-const pool = require("./db");
 
 // Util: validaciones simples
 function validarRegistro(body) {
@@ -31,7 +32,6 @@ router.get("/check/:rut", async (req, res) => {
 });
 
 // Guardar (insert / update)
-// Si el registro existe y body.overwrite !== true, devuelve exists:true para que cliente confirme.
 router.post("/guardar", async (req, res) => {
   const body = req.body;
   const errors = validarRegistro(body);
@@ -47,12 +47,10 @@ router.post("/guardar", async (req, res) => {
     const exists = rows.length > 0;
 
     if (exists && !overwrite) {
-      // Indica al cliente que existe y no sobrescribimos sin permiso
       return res.json({ success: false, exists: true, message: "Registro ya existe. Confirma sobrescribir." });
     }
 
     if (exists && overwrite) {
-      // UPDATE
       await pool.execute(
         `UPDATE paciente SET nombres=?, apellidos=?, direccion=?, ciudad=?, telefono=?, email=?, fecha_nacimiento=?, estado_civil=?, comentarios=? WHERE rut=?`,
         [nombres, apellidos, direccion, ciudad, telefono, email, fechaNacimiento, estadoCivil, comentarios, rut]
@@ -60,7 +58,6 @@ router.post("/guardar", async (req, res) => {
       return res.json({ success: true, message: "Registro actualizado correctamente" });
     }
 
-    // Insertar
     await pool.execute(
       `INSERT INTO paciente (rut, nombres, apellidos, direccion, ciudad, telefono, email, fecha_nacimiento, estado_civil, comentarios)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -78,7 +75,10 @@ router.post("/guardar", async (req, res) => {
 router.get("/buscar", async (req, res) => {
   const apellido = req.query.apellido || "";
   try {
-    const [rows] = await pool.execute("SELECT rut, nombres, apellidos, ciudad, telefono, email, fecha_nacimiento as fechaNacimiento, estado_civil as estadoCivil, comentarios FROM paciente WHERE apellidos LIKE ?", [`%${apellido}%`]);
+    const [rows] = await pool.execute(
+      "SELECT rut, nombres, apellidos, ciudad, telefono, email, fecha_nacimiento as fechaNacimiento, estado_civil as estadoCivil, comentarios FROM paciente WHERE apellidos LIKE ?",
+      [`%${apellido}%`]
+    );
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -86,4 +86,5 @@ router.get("/buscar", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
+

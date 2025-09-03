@@ -1,11 +1,21 @@
 // backend/server.js
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
-require("dotenv").config();
+import express from "express";
+import cors from "cors";
+import path from "path";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import routes from "./routes.js";
+import {PORT} from "./config.js"
+
+// Configurar variables de entorno
+dotenv.config();
 
 const app = express();
-const routes = require("./routes");
+
+// __dirname en ESM (no existe por defecto)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 app.use(cors()); // en producción restringe el origin
 app.use(express.json());
@@ -22,7 +32,7 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "public", "index.html"));
 });
 
-const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+

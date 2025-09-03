@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Aplicación ficha médica - Node + MySQL + Frontend JS",
   "main": "backend/server.js",
+  "type": "module",
   "scripts": {
     "start": "node backend/server.js",
     "dev": "nodemon backend/server.js"

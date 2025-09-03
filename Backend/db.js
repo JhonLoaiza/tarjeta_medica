@@ -1,17 +1,15 @@
-// backend/db.js
-const mysql = require("mysql2/promise");
-const dotenv = require("dotenv");
+import { createPool } from "mysql2/promise";
+import dotenv from "dotenv";
+
 dotenv.config();
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || "localhost",
-  user: process.env.DB_USER || "root",
-  password: process.env.DB_PASS || "chugi12",
-  database: process.env.DB_NAME || "ficha_medica",
-  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+export const pool = createPool({
+  user: 'root',
+  password: 'chugi12',
+  host: 'localhost',
+  port: 3306,
+  database: 'ficha_medica'
+})
 
-module.exports = pool;
+export default pool;
+
