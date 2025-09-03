@@ -1,14 +1,21 @@
 import { createPool } from "mysql2/promise";
 import dotenv from "dotenv";
+import {
+  DB_HOST,
+  DB_NAME,
+  DB_PASSWORD,
+  DB_USER,
+  DB_PORT
+} from './config.js'
 
 dotenv.config();
 
 export const pool = createPool({
-  user: 'root',
-  password: 'chugi12',
-  host: 'localhost',
-  port: 3306,
-  database: 'ficha_medica'
+  user: DB_USER,
+  password: DB_PASSWORD,
+  host: DB_HOST,
+  port: DB_PORT,
+  database: DB_NAME
 })
 
 export default pool;
